@@ -1,0 +1,25 @@
+contexts:                                 # list of contexts where a set of configurations are applied for 1 product in 1-m tenants x 1-m environments. 
+  - product: con                            # the product shared by the configurations
+    tenants:                                # the tenants shared by the configurations.
+    - name: jp
+    environments:                           # the environments shared by the configuration
+    - name: dev
+    #- name: test
+    configurations:                         # list of configurations. A configuration is applied to 1-m nodes (servers) and configures either fileshares, filemounts, databases, k8s namespaces or sftp areas.
+
+    - name: "msg-worker-services"
+      clusters: [in-cluster] 
+      nodepool: 
+      services:  
+        - name: emailsend          
+        - name: etlworker-msg
+        - name: fileoperation-msg
+
+    - name: "cfg-worker-services"
+      clusters: [in-cluster]                                    
+      services:  []
+        
+
+    - name: "web-services"
+      clusters: [in-cluster]                                    
+      services:  []

@@ -1,0 +1,10 @@
+main: 
+  environmentName: "dev"
+  thisSourceRepoUrl: https://kmd-dima@dev.azure.com/kmd-dima/KMD.DIMA.ConnectNEC/_git/Playground.1a.AppOfApps
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps
+    targetRevision: HEAD

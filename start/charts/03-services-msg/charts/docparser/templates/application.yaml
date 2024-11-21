@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:    
+  labels:
+    systempart: web-services
+  name: docparser
+  namespace: argo-cd
+  resourceVersion: "11037646"  
+spec:
+  destination:
+    namespace: dev-jp-con
+    server: https://kubernetes.default.svc
+  project: dev-jp-con
+  source:
+    helm:
+      valueFiles:
+      - {{ .Values.release }}.general.values.yaml
+      - {{ .Values.release }}.dev-jp-con.values.yaml
+    path: gitops/03-applications/msg-worker-services/general
+    repoURL: git@ssh.dev.azure.com:v3/kmd-dima/KMD.DIMA.ConnectNEC/NP.One.Connect.DevOps
+    targetRevision: HEAD
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
+      - CreateProject=true

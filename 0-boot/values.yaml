@@ -1,0 +1,18 @@
+argo-cd:
+  dex:
+    enabled: false
+  notifications:
+    enabled: false
+  applicationSet:
+    enabled: false
+  ingress:
+    enabled: true
+  server:
+    insecure: true
+    ingressGrpc:
+      enabled: true
+      # hostname: argocd.dingo.dk
+  config:
+    secret:
+      argocdServerAdminPassword: Kmd12345
+      

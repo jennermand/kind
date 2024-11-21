@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:  
+  generation: 4
+  name: dev-jp-con
+  namespace: argo-cd  
+spec:
+  destinations:
+  - name: in-cluster
+    namespace: ' dev-jp-con'
+    server: https://kubernetes.default.svc
+  - name: '*'
+    namespace: '*'
+    server: '*'
+  sourceRepos:
+  - git@ssh.dev.azure.com:v3/kmd-dima/KMD.DIMA.ConnectNEC/NP.One.Connect.MultiTenantApps.GitOps
