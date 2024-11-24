@@ -2,7 +2,7 @@
 # https://mauilion.dev/posts/kind-pvc-localdata/
 
 $namespace="argo-cd"
-
+$token = $env:TOKEN
 $bootDir = "C:\projects\KMD.Connect.JPN\NP.One.Connect.DevOps\gitops"
 
 kind delete cluster --name kind 
@@ -17,7 +17,7 @@ kubectl create ns $namespace
 Start-Sleep -Seconds 5
 
 Write-Host "👌 Installere ArgoCD i $namespace namespace..."
-helm install $namespace ./0-boot -n $namespace
+helm install $namespace ./0-boot -n $namespace --set argocd.token=$token
 
 # helm install boot $bootDir/01-boot 
 
