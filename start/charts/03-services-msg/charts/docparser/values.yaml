@@ -1,4 +1,0 @@
-release: docparser
-
-docparser:
-  release: docparser

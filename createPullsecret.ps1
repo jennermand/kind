@@ -1,4 +1,4 @@
-$ACR_NAME="kmddimaacrdev"
+$ACR_NAME=""
 Write-Host "ACR_NAME: $ACR_NAME"
 $SERVICE_PRINCIPAL_NAME="Jens Willart Karsø (NFK)"
 Write-Host "SERVICE_PRINCIPAL_NAME: $SERVICE_PRINCIPAL_NAME"
