@@ -3,7 +3,7 @@
 
 $namespace="argo-cd"
 $token = $env:TOKEN
-$bootDir = "C:\projects\KMD.Connect.JPN\NP.One.Connect.DevOps\gitops"
+
 
 kind delete cluster --name kind 
 kind delete clusters --all
