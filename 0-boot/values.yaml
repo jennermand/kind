@@ -1,6 +1,7 @@
 
       
-argocd:  
+argocd:
+  token: your-token-here
   argo-cd:
     dex:
       enabled: false
