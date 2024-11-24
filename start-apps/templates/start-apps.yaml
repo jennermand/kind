@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: 04-apps-applications-set
-  namespace: argocd
+  name: start
+  namespace: argo-cd
 spec: 
   generators:
   - git:
