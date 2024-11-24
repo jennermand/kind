@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: start-apps
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: 'file:///mnt/c/projects/kind/apps'
+        revision: HEAD
+        directories:
+          - path: '*'
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: 'file:///mnt/c/projects/kind/apps'
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
