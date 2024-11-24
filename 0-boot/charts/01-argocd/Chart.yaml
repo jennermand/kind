@@ -1,0 +1,7 @@
+apiVersion: v2
+name: argo-cd
+version: 1.0.0
+dependencies:
+  - name: argo-cd
+    version: 7.0.25
+    repository: oci://registry-1.docker.io/bitnamicharts
