@@ -1,20 +1,20 @@
-argo-cd:
-  dex:
-    enabled: false
-  notifications:
-    enabled: false
-  applicationSet:
-    enabled: true
-  ingress:
-    enabled: true
-  server:
-    insecure: true
-    ingressGrpc:
-      enabled: true
-      # hostname: argocd.dingo.dk
-  config:
-    secret:
-      argocdServerAdminPassword: ding
+
       
-argocd:
-  token: your-token-here
+argocd:  
+  argo-cd:
+    dex:
+      enabled: false
+    notifications:
+      enabled: false
+    applicationSet:
+      enabled: true
+    ingress:
+      enabled: true
+    server:
+      insecure: true
+      ingressGrpc:
+        enabled: true
+        # hostname: argocd.dingo.dk
+    config:
+      secret:
+        argocdServerAdminPassword: ding

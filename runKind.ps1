@@ -18,7 +18,12 @@ kubectl create namespace argo-events
 Start-Sleep -Seconds 5
 
 Write-Host "👌 Installere ArgoCD i $namespace namespace..."
-helm install $namespace ./0-boot -n $namespace --set argocd.token=$token
+helm install $namespace ./0-boot -n $namespace --set token=$token
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error: Helm install failed." -ForegroundColor Red
+    exit 1
+}
+
 kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
 # Install with a validating admission controller
 kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install-validating-webhook.yaml
