@@ -4,7 +4,7 @@ argo-cd:
   notifications:
     enabled: false
   applicationSet:
-    enabled: false
+    enabled: true
   ingress:
     enabled: true
   server:
@@ -14,5 +14,5 @@ argo-cd:
       # hostname: argocd.dingo.dk
   config:
     secret:
-      argocdServerAdminPassword: Kmd12345
+      argocdServerAdminPassword: ding
       

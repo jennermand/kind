@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  password: Z2hwX1p2Z0Jrdjd2U0lUMUJpUjJhM3JnSndoME9zNVRpTTBpTWVveA==
+  project: ZGVmYXVsdA==
+  type: Z2l0
+  url: aHR0cHM6Ly9naXRodWIuY29tL2plbm5lcm1hbmQva2luZA==
+  username: amVubmVybWFuZA==
+kind: Secret
+metadata:
+  annotations:
+    managed-by: argocd.argoproj.io
+  creationTimestamp: "2024-11-24T10:02:12Z"
+  labels:
+    argocd.argoproj.io/secret-type: repository
+  name: repo-1588226388
+  namespace: argo-cd
+  resourceVersion: "1318"
+  uid: b66454c6-5399-4122-aa50-1e2c676f3d06
+type: Opaque
