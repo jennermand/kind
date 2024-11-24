@@ -1,28 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: start-apps
+  name: 04-apps-applications-set
   namespace: argocd
-spec:
+spec: 
   generators:
-    - git:
-        repoURL: 'https://github.com/jennermand/kind'
-        revision: HEAD
-        directories:
-          - path: 'apps/*'
+  - git:
+      repoURL: https://github.com/jennermand/kind
+      revision: main
+      directories:
+      - path: apps/*
   template:
     metadata:
-      name: '{{path.basename}}'
-    spec:
-      project: default
+      name: '{{`{{path.basename}}`}}'
+    spec: 
+      project: default      
       source:
-        repoURL: 'https://github.com/jennermand/kind.git'
-        targetRevision: HEAD
-        path: '{{path}}'
+        repoURL: https://github.com/jennermand/kind
+        targetRevision: main
+        path: '{{`{{path}}`}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: default
+        namespace: '{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
           prune: true
-          selfHeal: true
+          selfHeal: false
+        syncOptions:
+          - CreateNamespace=true 
