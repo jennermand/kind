@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: pod-status-sensor
+  namespace: argo-events
+spec:
+  dependencies:
+    - name: pod-status
+      eventSourceName: pod-status-event-source
+      eventName: pod
+  triggers:
+    - template:
+        name: github-workflow-trigger
+        http:
+          url: https://api.github.com/repos/jennermand/kind/dispatches
+          method: POST
+          headers:
+            Authorization:
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: token
+          payload:
+            event_type: pod_status_change
+            client_payload:
+              pod_name: "{{ .pod.metadata.name }}"
+              pod_status: "{{ .pod.status.phase }}"

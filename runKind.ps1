@@ -13,11 +13,15 @@ docker ps -aq | ForEach-Object { docker rm -f $_ }
 kind create cluster --config volume.yaml
 
 kubectl create ns $namespace
+kubectl create namespace argo-events
 
 Start-Sleep -Seconds 5
 
 Write-Host "👌 Installere ArgoCD i $namespace namespace..."
 helm install $namespace ./0-boot -n $namespace --set argocd.token=$token
+kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
+# Install with a validating admission controller
+kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install-validating-webhook.yaml
 
 # helm install boot $bootDir/01-boot 
 
@@ -26,6 +30,7 @@ while ((kubectl get pods -n $namespace --no-headers | Select-String -Pattern "Ru
     Write-Host "Venter på at alle pods er i 'Running' tilstand i $namespace namespace..."
     Start-Sleep -Seconds 5
 }
+
 
 Write-Host "Alle pods er nu i 'Running' tilstand i $namespace namespace."
 

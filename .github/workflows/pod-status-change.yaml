@@ -1,0 +1,17 @@
+name: Pod Status Change
+
+on:
+  repository_dispatch:
+    types: [pod_status_change]
+
+jobs:
+  handle-pod-status-change:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Handle Pod Status Change
+        run: |
+          echo "Pod Name: ${{ github.event.client_payload.pod_name }}"
+          echo "Pod Status: ${{ github.event.client_payload.pod_status }}"

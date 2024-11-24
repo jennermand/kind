@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: pod-status-event-source
+  namespace: argo-events
+spec:
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+  pod:
+    namespace: default
+    eventTypes:
+      - add
+      - update
+      - delete
+      
