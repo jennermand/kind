@@ -6,17 +6,17 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: 'file:///mnt/c/projects/kind/apps'
+        repoURL: 'https://github.com/jennermand/kind.git'
         revision: HEAD
         directories:
-          - path: '*'
+          - path: 'apps/*'
   template:
     metadata:
       name: '{{path.basename}}'
     spec:
       project: default
       source:
-        repoURL: 'file:///mnt/c/projects/kind/apps'
+        repoURL: 'https://github.com/jennermand/kind.git'
         targetRevision: HEAD
         path: '{{path}}'
       destination:
