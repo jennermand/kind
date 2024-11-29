@@ -1,9 +1,0 @@
-main: 
-  environmentName: "dev"
-  thisSourceRepoUrl: https://github.com/jennermand/kind.git
-spec:
-  destination:
-    server: https://kubernetes.default.svc
-  source:
-    repoURL: https://github.com/jennermand/kind.git
-    targetRevision: HEAD

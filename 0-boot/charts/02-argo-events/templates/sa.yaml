@@ -1,0 +1,34 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-events
+rules:
+  - apiGroups:
+      - "apps"
+      - "batch"
+      - ""
+    verbs:
+      - "*"
+    resources:
+      - deployments
+      - replicasets
+      - jobs
+      - pods
+      - workflows
+      - workflowtemplates
+      - cronworkflows
+      - clusterworkflowtemplates
+      
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-events
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-events
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: argo-events

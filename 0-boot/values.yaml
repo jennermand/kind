@@ -1,7 +1,8 @@
-
-      
 argocd:
-  token: your-token-here
+  argocd:
+    repo: "https://github.com/sparnord/jensk-dev"
+    token: your-token-here
+
   argo-cd:
     dex:
       enabled: false
@@ -15,7 +16,17 @@ argocd:
       insecure: true
       ingressGrpc:
         enabled: true
-        # hostname: argocd.dingo.dk
+
     config:
       secret:
         argocdServerAdminPassword: ding
+
+events:
+  argocd:
+    token: "{{ .Values.argocd.argocd.token }}"
+
+  password:
+    secretName: github-token
+    secretKey: token
+
+  namespace: argo-events

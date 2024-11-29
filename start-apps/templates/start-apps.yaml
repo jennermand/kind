@@ -6,18 +6,18 @@ metadata:
 spec: 
   generators:
   - git:
-      repoURL: https://github.com/jennermand/kind
-      revision: main
+      repoURL: https://github.com/sparnord/jensk-dev
+      revision: HEAD
       directories:
-      - path: apps/*
+      - path: kind/apps/*
   template:
     metadata:
       name: '{{`{{path.basename}}`}}'
     spec: 
       project: default      
       source:
-        repoURL: https://github.com/jennermand/kind
-        targetRevision: main
+        repoURL: https://github.com/sparnord/jensk-dev
+        targetRevision: HEAD
         path: '{{`{{path}}`}}'
       destination:
         server: https://kubernetes.default.svc

@@ -2,7 +2,7 @@
 
 # Name of the kind cluster
 CLUSTER_NAME="jenk-cluster"
-
+ARGO_NAMESPACE="argo-cd"
 spinner() {
     local pid=$!
     local delay=0.1
@@ -46,6 +46,21 @@ spinner_function() {
     wait $cmd_pid
 }
 
+perform_helm_upgrade() {
+    echo "Detected changes in 0-boot folder. Performing Helm upgrade..."
+    helm upgrade -n ${ARGO_NAMESPACE} ./0-boot
+    #helm install argo-cd -n ${ARGO_NAMESPACE} ./0-boot/ --set argocd.argocd.token=$GITHUB_TOKEN
+}
+
+# Function to monitor file changes
+monitor_file_changes() {
+    inotifywait -m -r -e modify,create,delete,move ./0-boot |
+    while read -r directory events filename; do
+        echo "Change detected: $events in $directory$filename"
+        perform_helm_upgrade
+    done
+}
+
 # Check if the cluster already exists
 if kind get clusters | grep -q "^${CLUSTER_NAME}$"; then
     echo "Cluster '${CLUSTER_NAME}' already exists."
@@ -61,8 +76,8 @@ nodes:
   extraMounts:
   - hostPath: /etc/ssl/certs/ca-certificates.crt
     containerPath: /etc/ssl/certs/ca-certificates.crt
-  - hostPath: ./apps
-    containerPath: /apps
+#   - hostPath: ./apps
+#     containerPath: /apps
 EOF
     echo "Cluster '${CLUSTER_NAME}' created successfully."
     
@@ -73,28 +88,71 @@ EOF
     spinner_function kubectl wait --for=condition=Ready node --all --timeout=60s
     
     # Install ArgoCD
-    spinner_function kubectl create namespace argocd
+    spinner_function kubectl create namespace ${ARGO_NAMESPACE}
+    spinner_function kubectl create namespace argo-events
+    # spinner_function kubectl apply -n ${ARGO_NAMESPACE} -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    # spinner_function kubectl apply -n ${ARGO_NAMESPACE} -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.6/manifests/ha/install.yaml
+    # helm install argocd -n ${ARGO_NAMESPACE} oci://registry-1.docker.io/bitnamicharts/argo-cd
+    spinner_function kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/namespace-install.yaml
+    
+    # spinner_function kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
+    # Install with a validating admission controller
+    # spinner_function kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install-validating-webhook.yaml
+    
+    spinner_function kubectl apply -n argo-events -f https://raw.githubusercontent.com/argoproj/argo-events/stable/examples/eventbus/native.yaml
+    
+    echo
     
     # Ensure the correct path to the Helm chart
-    spinner_function helm install argocd -n argocd cluster/
-    
+    spinner_function helm install argo-cd -n ${ARGO_NAMESPACE} ./0-boot/ --set argocd.argocd.token=$GITHUB_TOKEN
+    spinner_function kubectl patch svc argocd-server -n ${ARGO_NAMESPACE} -p '{"spec": {"type": "LoadBalancer"}}'
     # wait for argocd to be ready
-    spinner_function kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=server -n argocd --timeout=360s
+    spinner_function kubectl wait --for=condition=Ready pod -l app.kubernetes.io/component=server -n ${ARGO_NAMESPACE} --timeout=360s
+    
     # Capture the PID of the kubectl command
-    # kubectl_pid=$!
+    kubectl_pid=$!
     
     # # Show spinner while the kubectl command is running
-    # spinner $kubectl_pid
+    spinner $kubectl_pid
     
-    # # Wait for the kubectl command to complete
-    # wait $kubectl_pid
+    # Wait for the kubectl command to complete
+    wait $kubectl_pid
     
     #wait for password to be generated in argocd-secret
-    # kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=360s
+    spinner_function kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n ${ARGO_NAMESPACE} --timeout=360s
+    
     
     
     echo "Username: \"admin\""
-    echo "Password: $(kubectl -n argocd get secret argocd-secret -o jsonpath="{.data.clearPassword}" | base64 -d)"
-    
-    kubectl port-forward svc/argocd-argo-cd-server -n argocd 8080:443
+    if kubectl get secret argocd-initial-admin-secret -n ${ARGO_NAMESPACE} > /dev/null 2>&1; then
+        echo "Password: $(kubectl get secret argocd-initial-admin-secret -n ${ARGO_NAMESPACE} -o jsonpath="{.data.password}" | base64 --decode)"
+    else
+        echo "Password: $(kubectl -n ${ARGO_NAMESPACE} get secret argocd-secret -o jsonpath="{.data.clearPassword}" | base64 -d)"
+    fi
+    #kubectl port-forward svc/argocd-argo-cd-server -n argocd 8080:443
+    # Check if the argocd-argo-cd-server service exists
+    if kubectl get svc/argocd-argo-cd-server -n ${ARGO_NAMESPACE} > /dev/null 2>&1; then
+        echo "Service argocd-argo-cd-server exists. Starting port-forward..."
+        kubectl port-forward svc/argocd-argo-cd-server -n ${ARGO_NAMESPACE} 8080:443
+        elif kubectl get svc/argocd-server -n ${ARGO_NAMESPACE} > /dev/null 2>&1; then
+        echo "Service argocd-argo-cd-server exists. Starting port-forward..."
+        kubectl port-forward svc/argocd-server -n ${ARGO_NAMESPACE} 8080:443
+        elif kubectl get svc/argo-cd-server -n ${ARGO_NAMESPACE} > /dev/null 2>&1; then
+        echo "Service argocd-argo-cd-server exists. Starting port-forward..."
+        
+        #create a thread that monitors file changes in "0-boot" folder and subfolder. When change is detected, a helm upgrade is performed
+        
+        # monitor_file_changes &
+        kubectl port-forward svc/argo-cd-server -n ${ARGO_NAMESPACE} 8080:443
+        
+        
+        #open browser to localhost:8080
+        open http://localhost:8080
+    else
+        echo "Service argocd-argo-cd-server does not exist. Exiting."
+    fi
 fi
+
+# Docs
+
+#https://gitlab.com/rumble-o-bin/playground/multicluster-play/-/tree/main/app?ref_type=heads

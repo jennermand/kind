@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: pod-status-sensor
+  namespace: argo-events
+spec:
+  serviceAccountName: default
+  dependencies:
+    - name: app
+      eventSourceName: pod-status-event-source
+      eventName: app
+  triggers:
+    - template:
+        name: debug-trigger
+        log:
+          message: "Event payload: {{ .Input }}"
+    - template:
+        name: github-actions
+        k8s:
+          group: batch
+          version: v1
+          resource: jobs
+          operation: create
+          source:
+            resource:
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                generateName: github-actions-trigger-
+                namespace: argo-events
+              spec:
+                template:
+                  spec:
+                    containers:
+                    - name: curl
+                      image: curlimages/curl:7.73.0
+                      command: ["sh", "-c"]
+                      args:
+                        - |
+                          curl -X POST \
+                            -H "Accept: application/vnd.github.everest-preview+json" \
+                            -H "Authorization: Bearer $(cat /secrets/token)" \
+                            https://api.github.com/repos/sparnord/jensk-dev/actions/workflows/pod-status-change.yaml/dispatches \
+                            -d '{"ref":"master", "inputs": {"event_type": "'"$EVENT_TYPE"'", "full_payload": "$FULL_PAYLOAD"}}'
+                      env:
+                      - name: EVENT_TYPE
+                        value: ""
+                      - name: FULL_PAYLOAD
+                        value: ""
+                      volumeMounts:
+                      - name: secret-volume
+                        mountPath: /secrets
+                        readOnly: true
+                    restartPolicy: Never
+                    volumes:
+                    - name: secret-volume
+                      secret:
+                        secretName: github-token
+                backoffLimit: 4
+          parameters:
+            - src:
+                dependencyName: app
+                contextTemplate: '{{ .Input }}'
+              dest: spec.template.spec.containers.0.env.0.value
+            - src:
+                dependencyName: app
+                dataKey: body.spec.containers[0].image
+              dest: spec.template.spec.containers.0.env.1.value
