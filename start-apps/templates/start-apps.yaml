@@ -6,7 +6,7 @@ metadata:
 spec: 
   generators:
   - git:
-      repoURL: {{ .Values.env.REPO_URL }} }}
+      repoURL: {{ .Values.env.REPO_URL }}
       revision: HEAD
       directories:
       - path: apps/*
