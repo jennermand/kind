@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
        - env:
-        - name: REPO-URL
+        - name: REPOURL
           valueFrom:
             configMapKeyRef:
               name: repo-config
