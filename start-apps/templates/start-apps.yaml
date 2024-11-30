@@ -6,7 +6,7 @@ metadata:
 spec: 
   generators:
   - git:
-      repoURL: https://github.com/sparnord/jensk-dev
+      repoURL: {{ .Values.argocd.argocd.repo | default (env "REPO_URL")  }}
       revision: HEAD
       directories:
       - path: apps/*
@@ -16,7 +16,7 @@ spec:
     spec: 
       project: default      
       source:
-        repoURL: https://github.com/sparnord/jensk-dev
+        repoURL: {{ .Values.argocd.argocd.repo | default (env "REPO_URL")  }}
         targetRevision: HEAD
         path: '{{`{{path}}`}}'
       destination:

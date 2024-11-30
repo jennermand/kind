@@ -40,7 +40,7 @@ spec:
                           curl -X POST \
                             -H "Accept: application/vnd.github.everest-preview+json" \
                             -H "Authorization: Bearer $(cat /secrets/token)" \
-                            https://api.github.com/repos/sparnord/jensk-dev/actions/workflows/pod-status-change.yaml/dispatches \
+                            https://api.github.com/repos/jennermand/kind/actions/workflows/pod-status-change.yaml/dispatches \
                             -d '{"ref":"master", "inputs": {"event_type": "'"$EVENT_TYPE"'", "full_payload": "$FULL_PAYLOAD"}}'
                       env:
                       - name: EVENT_TYPE
