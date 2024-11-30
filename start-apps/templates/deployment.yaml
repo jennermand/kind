@@ -14,9 +14,7 @@ spec:
         app: start-apps
     spec:
       containers:
-      - name: start-apps
-        image: your-image
-        env:
+       - env:
         - name: REPO_URL
           valueFrom:
             configMapKeyRef:
