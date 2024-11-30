@@ -1,5 +1,5 @@
 no: value
 
 env:
-  REPO_URL: ""
+  REPO-URL: ""
 repo: your-repo-here
