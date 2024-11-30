@@ -2,8 +2,8 @@
 # https://mauilion.dev/posts/kind-pvc-localdata/
 
 $namespace="argo-cd"
-$token = $env:TOKEN
-
+$token=$env:GITHUB_TOKEN
+$gitrepo="https://github.com/jennermand/kind.git"
 
 kind delete cluster --name kind 
 kind delete clusters --all
@@ -16,17 +16,17 @@ kubectl create ns $namespace
 kubectl create namespace argo-events
 
 Start-Sleep -Seconds 5
+kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
+# Install with a validating admission controller
+kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install-validating-webhook.yaml
 
 Write-Host "👌 Installere ArgoCD i $namespace namespace..."
-helm install $namespace ./0-boot -n $namespace --set token=$token
+helm install $namespace ./0-boot -n $namespace --set "argocd.argocd.token=$token,argocd.argocd.repo=$gitrepo"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Error: Helm install failed." -ForegroundColor Red
     exit 1
 }
 
-kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
-# Install with a validating admission controller
-kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install-validating-webhook.yaml
 
 # helm install boot $bootDir/01-boot 
 

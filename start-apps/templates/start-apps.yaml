@@ -9,7 +9,7 @@ spec:
       repoURL: https://github.com/sparnord/jensk-dev
       revision: HEAD
       directories:
-      - path: kind/apps/*
+      - path: apps/*
   template:
     metadata:
       name: '{{`{{path.basename}}`}}'

@@ -1,6 +1,6 @@
 argocd:
   argocd:
-    repo: "https://github.com/sparnord/jensk-dev"
+    repo: your-repo-here
     token: your-token-here
 
   argo-cd:
