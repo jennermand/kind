@@ -20,6 +20,6 @@ spec:
         env:
         - name: REPO_URL
           valueFrom:
-            secretKeyRef:
-              name: repo-secret
+            configMapKeyRef:
+              name: repo-config
               key: repo
