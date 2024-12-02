@@ -1,27 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: start-apps
+  name: start
   namespace: argo-cd
-spec:
+spec: 
   generators:
-    - env:
-        envs:
-          - name: REPO_URL
-            configMapRef:
-              name: repo-config
-              key: repo
+  - git:
+      repoURL: {{ .Values.env.REPOURL }}
+      revision: HEAD
+      directories:
+      - path: apps/*
   template:
     metadata:
-      name: '{{path.basename}}'
-    spec:
-      project: default
+      name: '{{`{{path.basename}}`}}'
+    spec: 
+      project: default      
       source:
-        repoURL: '{{env.REPO_URL}}'
+        repoURL: {{ .Values.env.REPOURL  }}
         targetRevision: HEAD
-        path: 'apps/{{path}}'
+        path: '{{`{{path}}`}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
+        namespace: '{{`{{path.basename}}`}}'
       syncPolicy:
         automated:
+          prune: true
+          selfHeal: false
+        syncOptions:
+          - CreateNamespace=true 

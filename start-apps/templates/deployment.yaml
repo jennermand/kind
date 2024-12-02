@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: start-apps
+  namespace: argo-cd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: start-apps
+  template:
+    metadata:
+      labels:
+        app: start-apps
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["sh", "-c", "while true; do sleep 3600; done"]
+        env:
+        - name: REPO_URL
+          valueFrom:
+            secretKeyRef:
+              name: repo-secret
+              key: repo
