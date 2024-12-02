@@ -1,2 +1,2 @@
 env:
-  REPOURL: $(REPOURL)
+  REPOURL: "https://github.com/jennermand/kind.git"
