@@ -6,7 +6,7 @@ metadata:
 spec: 
   generators:
   - git:
-      repoURL: $(REPOURL)
+      repoURL: {{ .Values.env.REPOURL }}
       revision: HEAD
       directories:
       - path: apps/*
@@ -16,7 +16,7 @@ spec:
     spec: 
       project: default      
       source: 
-        repoURL: $(REPOURL) 
+        repoURL: {{ .Values.env.REPOURL }}
         targetRevision: HEAD
         path: '{{`{{path}}`}}'
       destination:
@@ -25,6 +25,6 @@ spec:
       syncPolicy:
         automated:
           prune: true
-          selfHeal: false
+          selfHeal: true
         syncOptions:
           - CreateNamespace=true 
