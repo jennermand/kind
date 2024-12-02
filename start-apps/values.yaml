@@ -1,5 +1,2 @@
-no: value
-
 env:
-  REPOURL: your-repo-here
-repo: your-repo-here
+  REPOURL: ""
