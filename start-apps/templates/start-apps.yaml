@@ -15,8 +15,8 @@ spec:
       name: '{{`{{path.basename}}`}}'
     spec: 
       project: default      
-      source: $(REPOURL)
-        repoURL: 
+      source: 
+        repoURL: $(REPOURL) 
         targetRevision: HEAD
         path: '{{`{{path}}`}}'
       destination:
