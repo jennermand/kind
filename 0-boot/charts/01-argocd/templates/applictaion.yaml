@@ -14,7 +14,7 @@ spec:
   project: default
   source:
     path: ./start-apps
-    repoURL: {{ .Values.argocd.repo }}
+    repoURL: "{{ .Values.argocd.repo }}"
     targetRevision: HEAD
   syncPolicy:
     automated: {}

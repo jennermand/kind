@@ -1,3 +1,4 @@
+{{- if .Values.argocd.event }}
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
@@ -66,3 +67,4 @@ spec:
                 dependencyName: app
                 dataKey: body.spec.containers[0].image
               dest: spec.template.spec.containers.0.env.1.value
+{{- end }}

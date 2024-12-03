@@ -1,3 +1,4 @@
+{{- if .Values.argocd.event  }}
 apiVersion: argoproj.io/v1alpha1
 kind: EventBus
 metadata:
@@ -7,3 +8,4 @@ spec:
   nats:
     native:
       replicas: 1
+{{- end }}

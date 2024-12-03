@@ -1,3 +1,4 @@
+{{- if .Values.argocd.event }}
 apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
@@ -17,3 +18,4 @@ spec:
         - DELETE
       filter:
         afterStart: true
+{{- end }}

@@ -1,7 +1,19 @@
+events:
+  argocd:
+    token: "{{ .Values.argocd.argocd.token }}"
+    event: &events choice-here
+
+  password:
+    secretName: github-token
+    secretKey: token
+
+  namespace: argo-events
+
 argocd:
   argocd:
     repo: your-repo-here
     token: your-token-here
+    event: *events
 
   argo-cd:
     dex:
@@ -21,12 +33,4 @@ argocd:
       secret:
         argocdServerAdminPassword: ding
 
-events:
-  argocd:
-    token: "{{ .Values.argocd.argocd.token }}"
 
-  password:
-    secretName: github-token
-    secretKey: token
-
-  namespace: argo-events
