@@ -27,7 +27,7 @@ helm install $namespace ./0-boot -n $namespace `
     --set "events.argocd.event=$enableEvents" `
     --set "argocd.argocd.workflows=$enableWorkflows" `
     --set "argocd.argocd.version=$ARGO_WORKFLOWS_VERSION" `
-    --debug
+
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Error: Helm install failed." -ForegroundColor Red
     exit 1
@@ -165,3 +165,37 @@ Start-Process "http://localhost:8443"
 # kubectl apply -f .\pull-secret.yaml
 
 . .\portForward.ps1
+
+# At the end of runKind.ps1
+
+# Create parameter hashtable for splatting
+$menuParams = @{
+    namespace              = $namespace
+    token                  = $token
+    gitrepo                = $gitrepo
+    ARGO_WORKFLOWS_VERSION = $ARGO_WORKFLOWS_VERSION
+    enableWorkflows        = $enableWorkflows
+    enableEvents           = $enableEvents
+}
+# pause - wait for key pressed
+pause
+
+# Call k8s-menu.ps1 with parameters
+try {
+    . .\k8s-menu.ps1
+}
+catch {
+    Write-Host "❌ Error launching menu: $_" -ForegroundColor Red
+    exit 1
+}
+
+# try {
+#     Write-Host "Port forwarding jobs running. Press Ctrl+C to stop..."
+#     $jobs | Wait-Job
+# }
+# catch {
+#     Write-Error "Error occurred: $_"
+# }
+# finally {
+#     $jobs | Remove-Job -Force
+# }

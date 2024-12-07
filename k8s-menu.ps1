@@ -1,3 +1,33 @@
+
+function Show-Variables {
+    param()
+    
+    Write-Host "`n=== Current Variables ===" -ForegroundColor Cyan
+    
+    $variables = @(
+        @{Name = "Namespace"; Value = $namespace; Type = $namespace.GetType().Name }
+        @{Name = "Token"; Value = "***${token.Substring(0,4)}..."; Type = $token.GetType().Name }
+        @{Name = "Git Repo"; Value = $gitrepo; Type = $gitrepo.GetType().Name }
+        @{Name = "Argo Version"; Value = $ARGO_WORKFLOWS_VERSION; Type = $ARGO_WORKFLOWS_VERSION.GetType().Name }
+        @{Name = "Workflows Enabled"; Value = $enableWorkflows; Type = $enableWorkflows.GetType().Name }
+        @{Name = "Events Enabled"; Value = $enableEvents; Type = $enableEvents.GetType().Name }
+    )
+
+    $nameWidth = ($variables | ForEach-Object { $_.Name.Length } | Measure-Object -Maximum).Maximum
+    $typeWidth = ($variables | ForEach-Object { $_.Type.Length } | Measure-Object -Maximum).Maximum
+
+    foreach ($var in $variables) {
+        $name = $var.Name.PadRight($nameWidth)
+        $type = $var.Type.PadRight($typeWidth)
+        Write-Host ("{0} [{1}]: " -f $name, $type) -NoNewline -ForegroundColor Yellow
+        Write-Host $var.Value -ForegroundColor Green
+    }
+    Write-Host "=====================`n" -ForegroundColor Cyan
+}
+
+# Add to menu options
+
+
 function FunctionA {
     param (
         [string]$param1
@@ -21,10 +51,7 @@ function FunctionC {
 
 # Define the menu options as a hashtable
 $menuOptions = @{
-    'a' = @{
-        Description = "Perform function A"
-        Action      = { FunctionA -param1 "exampleA" }
-    }
+   
     'b' = @{
         Description = "Perform function B"
         Action      = { FunctionB -param1 "exampleB" }
@@ -34,6 +61,65 @@ $menuOptions = @{
         Action      = { FunctionC }
     }
 }
+function Update-ArgoCD {
+    param(
+        [string]$Namespace = "argo-cd",
+        [hashtable]$Values
+    )
+
+    try {
+        # Validate helm exists
+        if (-not (Get-Command helm -ErrorAction SilentlyContinue)) {
+            throw "Helm is not installed or not in PATH"
+        }
+
+        # Validate path exists
+        if (-not (Test-Path "./0-boot")) {
+            throw "Chart path './0-boot' not found"
+        }
+
+        # Create hashtable of helm values
+        $helmValues = @{
+            "events.argocd.token"     = $token
+            "argocd.argocd.token"     = $token
+            # "argocd.argocd.repo"      = $gitrepo
+            "events.argocd.event"     = $enableEvents
+            "argocd.argocd.workflows" = $enableWorkflows
+            "argocd.argocd.version"   = $ARGO_WORKFLOWS_VERSION
+        }
+
+        # Convert hashtable to --set parameters
+        $setParams = $helmValues.GetEnumerator() | ForEach-Object {
+            "--set=$($_.Key)=$($_.Value)"
+        }
+
+        # Execute helm upgrade
+        $result = helm upgrade argo-cd ./0-boot -n $Namespace $setParams
+
+        if ($LASTEXITCODE -ne 0) {
+            throw "Helm upgrade failed with exit code $LASTEXITCODE"
+        }
+
+        Write-Host "✅ Argo CD upgraded successfully" -ForegroundColor Green
+        return $true
+    }
+    catch {
+        Write-Host "❌ Error upgrading Argo CD: $_" -ForegroundColor Red
+        return $false
+    }
+}
+$menuOptions['v'] = @{
+    Description = "View all variables"
+    Action      = { Show-Variables }
+}
+
+# Update menu option to use new function
+$menuOptions['a'] = @{
+    Description = "Update Argo CD installation"
+    Action      = { Update-ArgoCD -Namespace $namespace }
+}
+
+
 
 function Show-Menu {
     Clear-Host

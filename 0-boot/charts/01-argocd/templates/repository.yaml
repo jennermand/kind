@@ -1,3 +1,4 @@
+{{- if .Values.argocd.repo  }}
 apiVersion: v1
 data:
   password: {{ .Values.argocd.token | b64enc }}
@@ -17,3 +18,4 @@ metadata:
   resourceVersion: "1318"
   uid: b66454c6-5399-4122-aa50-1e2c676f3d06
 type: Opaque
+{{- end }}

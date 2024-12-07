@@ -14,13 +14,3 @@ $jobs = @(
   }
 ) 
 
-try {
-  Write-Host "Port forwarding jobs running. Press Ctrl+C to stop..."
-  $jobs | Wait-Job
-}
-catch {
-  Write-Error "Error occurred: $_"
-}
-finally {
-  $jobs | Remove-Job -Force
-}
