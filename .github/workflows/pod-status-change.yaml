@@ -8,10 +8,10 @@ on:
     inputs:
       full_payload:
         description: "Name of the Pod"
-        required: true
+        required: false
       event_type:
         description: "Status of the Pod"
-        required: true
+        required: false
 
 jobs:
   handle-pod-status-change:
