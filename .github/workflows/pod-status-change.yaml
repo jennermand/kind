@@ -4,6 +4,15 @@ on:
   repository_dispatch:
     types: [pod_status_change]
 
+  workflow_dispatch:
+    inputs:
+      full_payload:
+        description: "Name of the Pod"
+        required: true
+      event_type:
+        description: "Status of the Pod"
+        required: true
+
 jobs:
   handle-pod-status-change:
     runs-on: ubuntu-latest
@@ -15,3 +24,5 @@ jobs:
         run: |
           echo "Pod Name: ${{ github.event.client_payload.pod_name }}"
           echo "Pod Status: ${{ github.event.client_payload.pod_status }}"
+          echo "Job Name: ${{ inputs.event_type }}"
+          echo "Full Payload: ${{ inputs.full_payload }}"

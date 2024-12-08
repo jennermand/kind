@@ -65,6 +65,6 @@ spec:
               dest: spec.template.spec.containers.0.env.0.value
             - src:
                 dependencyName: app
-                dataKey: body.spec.containers[0].image
+                dataKey: body.apiVersion
               dest: spec.template.spec.containers.0.env.1.value
 {{- end }}

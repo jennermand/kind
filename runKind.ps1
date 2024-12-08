@@ -44,24 +44,8 @@ if ($enableEvents -eq $true) {
     kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install-validating-webhook.yaml
 
 }
-#kubectl create namespace argo-events
-
-#kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-events/stable/manifests/install.yaml
-# Install with a validating admission controller
-
-if ($enableWorkflows -eq $true) {
-    Write-Host "👌 Installere Argo Workflows i argocd namespace..."
-    kubectl create namespace argo    
-    kubectl apply -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/$ARGO_WORKFLOWS_VERSION/quick-start-minimal.yaml"
-}
-
-write-host "🛠️ Installere Argo events : $enableEvents"
 
 
-# while ((kubectl get pods -n $namespace --no-headers | Select-String -Pattern "Running").Count -ne (kubectl get pods -n $namespace --no-headers).Count) {
-#     Write-Host "Venter på at alle pods er i 'Running' tilstand i $namespace namespace..."
-#     Start-Sleep -Seconds 5
-# }
 function Show-ClusterStatus {
     param (
         [string]$Namespace,

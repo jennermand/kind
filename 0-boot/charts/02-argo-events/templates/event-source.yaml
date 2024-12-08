@@ -12,6 +12,7 @@ spec:
       group: apps
       version: v1
       resource: deployments
+      kind: Pod
       eventTypes:
         - ADD
         - UPDATE

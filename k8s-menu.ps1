@@ -53,13 +53,25 @@ function FunctionC {
 $menuOptions = @{
    
     'b' = @{
-        Description = "Perform function B"
-        Action      = { FunctionB -param1 "exampleB" }
+        Description = "Install or upgrade Argo-Events"
+        Action      = { 
+            . .\install-argo-events.ps1 
+        }
+    }
+    'c' = @{
+        Description = "Install or upgrade Argo-Workflow"
+        Action      = { 
+            . .\install-argo-workflow.ps1            
+        }
     }
     'x' = @{
         Description = "Exit"
         Action      = { FunctionC }
     }
+    # 'r' = @{
+    #     Description = "reload script"
+    #     Action      = { Reload-Script }
+    # }
 }
 function Update-ArgoCD {
     param(
@@ -82,7 +94,7 @@ function Update-ArgoCD {
         $helmValues = @{
             "events.argocd.token"     = $token
             "argocd.argocd.token"     = $token
-            # "argocd.argocd.repo"      = $gitrepo
+            "argocd.argocd.repo"      = ""
             "events.argocd.event"     = $enableEvents
             "argocd.argocd.workflows" = $enableWorkflows
             "argocd.argocd.version"   = $ARGO_WORKFLOWS_VERSION
@@ -126,25 +138,37 @@ function Show-Menu {
     Write-Host "====================="
     Write-Host " Kubernetes Menu"
     Write-Host "====================="
-    foreach ($key in $menuOptions.Keys) {
+    foreach ($key in $menuOptions.Keys | Sort-Object) {
         Write-Host "$key : $($menuOptions[$key].Description)"
     }
     Write-Host "====================="
 }
 
 do {
+    # show meny ordered by key
     Show-Menu
-    $choice = Read-Host "Enter your choice"
 
-    if ($menuOptions.ContainsKey($choice)) {
-        & $menuOptions[$choice].Action
-        if ($choice -ne 'x') {
+    Write-Host "`n" -NoNewline -BackgroundColor DarkGreen -ForegroundColor White
+    Write-Host "Available options: " -NoNewline -BackgroundColor DarkGreen -ForegroundColor White
+    
+    $choice = Read-Host "Enter your choice"
+    try {
+
+        if ($menuOptions.ContainsKey($choice)) {
+            & $menuOptions[$choice].Action
+            if ($choice -ne 'x') {
+                Pause
+            }
+        }
+        else {
+            Write-Host "Invalid choice, please try again."
             Pause
         }
     }
-    else {
-        Write-Host "Invalid choice, please try again."
+    catch {
+        Write-Host "Dang - something went wrong: $_"
         Pause
+        continue
     }
 } while ($choice -ne 'x')
 
