@@ -1,8 +1,8 @@
 $jobs = @(    
   # start job if argo namespace is created  
-  if (kubectl get ns argo -o name) {
-    Start-Job { kubectl -n argo port-forward service/argo-server 2746:2746 }
-  }
+  # if (kubectl get ns argo -o name) {
+  #   Start-Job { kubectl -n argo port-forward service/argo-server 2746:2746 }
+  # }
 
   # start job if argo-cd namespace is created
   #Start-Job {kubectl -n argo port-forward service/argo-server 2746:2746}

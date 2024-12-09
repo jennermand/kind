@@ -13,7 +13,7 @@ argocd:
   argocd:
     repo: your-repo-here
     token: your-token-here
-    event: *events
+    event: events
 
   argo-cd:
     dex:

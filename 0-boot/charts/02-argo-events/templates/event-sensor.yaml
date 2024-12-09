@@ -42,7 +42,7 @@ spec:
                             -H "Accept: application/vnd.github.everest-preview+json" \
                             -H "Authorization: Bearer $(cat /secrets/token)" \
                             https://api.github.com/repos/jennermand/kind/actions/workflows/pod-status-change.yaml/dispatches \
-                            -d '{"ref":"main", "inputs": {"event_type": "'"$EVENT_TYPE"'", "full_payload": "$FULL_PAYLOAD"}}'
+                            -d '{"ref":"main", "inputs": {"event_type": "'"$EVENT_TYPE"'", "full_payload": "'"$FULL_PAYLOAD"'"}}'
                       env:
                       - name: EVENT_TYPE
                         value: ""
@@ -61,10 +61,10 @@ spec:
           parameters:
             - src:
                 dependencyName: app
-                contextTemplate: '{{ .Input }}'
+                dataKey: body.spec.template.spec.containers.0.name
               dest: spec.template.spec.containers.0.env.0.value
             - src:
                 dependencyName: app
-                dataKey: body.apiVersion
+                dataKey: body.spec.template.spec.containers.0.image
               dest: spec.template.spec.containers.0.env.1.value
 {{- end }}

@@ -162,7 +162,7 @@ $menuParams = @{
     enableEvents           = $enableEvents
 }
 # pause - wait for key pressed
-pause
+
 
 # Call k8s-menu.ps1 with parameters
 try {
@@ -172,14 +172,3 @@ catch {
     Write-Host "❌ Error launching menu: $_" -ForegroundColor Red
     exit 1
 }
-
-# try {
-#     Write-Host "Port forwarding jobs running. Press Ctrl+C to stop..."
-#     $jobs | Wait-Job
-# }
-# catch {
-#     Write-Error "Error occurred: $_"
-# }
-# finally {
-#     $jobs | Remove-Job -Force
-# }

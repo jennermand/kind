@@ -1,0 +1,7 @@
+server:
+  extraArgs:   
+    - --authMode: server
+
+    # - --argo-server-tls-certificate: /etc/argo/tls/tls.crt
+    # - --argo-server-tls-private-key: /etc/argo/tls/tls.key
+    # - --argo-server-tls-insecure: "true" 
