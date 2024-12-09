@@ -1,35 +1,8 @@
 # Some documentation
 # https://mauilion.dev/posts/kind-pvc-localdata/
-
-$namespace = "argo-cd"
-$token = $env:GITHUB_TOKEN
-$gitrepo = "https://github.com/jennermand/kind.git"
-$ARGO_WORKFLOWS_VERSION = "v3.6.2"
-$enableWorkflows = $false
-$enableEvents = $false
-kind delete cluster --name kind 
-kind delete clusters --all
-
-docker ps -aq | ForEach-Object { docker rm -f $_ }
-
-kind create cluster --config volume.yaml
-
-kubectl create ns $namespace
-
-Start-Sleep -Seconds 5
-
-
-Write-Host "👌 Installere ArgoCD i $namespace namespace..."
-helm install $namespace ./0-boot -n $namespace `
-    --set "events.argocd.token=$token" `
-    --set "argocd.argocd.token=$token" `
-    --set "argocd.argocd.repo=$gitrepo" `
-    --set "events.argocd.event=$enableEvents" `
-    --set "argocd.argocd.workflows=$enableWorkflows" `
-    --set "argocd.argocd.version=$ARGO_WORKFLOWS_VERSION" `
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error: Helm install failed." -ForegroundColor Red
+#test if docker is running
+if (!(docker info --format '{{.ServerVersion}}')) {
+    Write-Host "❌ Docker is not running. Please start Docker Desktop and try again." -ForegroundColor Red
     exit 1
 }
 
