@@ -7,12 +7,32 @@ $gitrepo = "https://github.com/jennermand/kind.git"
 $ARGO_WORKFLOWS_VERSION = "v3.6.2"
 $enableWorkflows = $false
 $enableEvents = $false
+$CLUSTER_NAME = "kind"
+
 kind delete cluster --name kind 
 kind delete clusters --all
 
 docker ps -aq | ForEach-Object { docker rm -f $_ }
 
-kind create cluster --config volume.yaml
+# Define the kind cluster configuration with a self-signed certificate
+$kindConfig = @"
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraMounts:
+  - hostPath: c:\Temp\kind\data\certs\certificate.crt
+    containerPath: /etc/ssl/certs/ca-certificates.crt
+"@
+
+# Write the configuration to a temporary file
+$tempConfigPath = [System.IO.Path]::GetTempFileName()
+$tempConfigPath = [System.IO.Path]::ChangeExtension($tempConfigPath, ".yaml")
+$kindConfig | Out-File -FilePath $tempConfigPath -Encoding utf8
+
+# Create the kind cluster with the specified configuration
+kind create cluster --name $CLUSTER_NAME --config $tempConfigPath
+
 
 kubectl create ns $namespace
 
@@ -161,9 +181,8 @@ $menuParams = @{
     enableWorkflows        = $enableWorkflows
     enableEvents           = $enableEvents
 }
-# pause - wait for key pressed
-pause
 
+pause
 # Call k8s-menu.ps1 with parameters
 try {
     . .\k8s-menu.ps1
