@@ -72,6 +72,7 @@ function Show-ClusterStatus {
         [int]$TimeoutSeconds = 300
     )
     
+    
     $spinner = "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"
     $startTime = Get-Date
     $i = 0
