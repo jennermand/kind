@@ -64,6 +64,12 @@ $menuOptions = @{
             . .\install-argo-workflow.ps1            
         }
     }
+    'd' = @{
+        Description = "Install or upgrade Argo-Rollouts"
+        Action      = { 
+            . .\install-argo-rollouts.ps1            
+        }
+    }
     'x' = @{
         Description = "Exit"
         Action      = { FunctionC }
