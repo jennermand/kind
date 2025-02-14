@@ -1,0 +1,47 @@
+UMI_TENANT_ID: 4181b3a0-8ded-420d-9dd5-286d56fc6b19
+UMI_CLIENT_ID: b0873cfe-c499-4095-9887-04ad34b8ad37
+servicePort: 9080
+
+onprem: true
+clusterType: corp
+env: dev
+
+replicaCount: 2
+
+nfsServer: pi693pa654.9380a.net
+nfsPath: /nfs-data/
+
+## Deployment strategy: RollingUpdate or Recreate
+deploymentStrategy: RollingUpdate
+minReadySeconds: 5
+progressDeadlineSeconds: 300
+
+memory: 256Mi
+livenessPath: /health
+livenessPort:
+readinessPath: /health
+readinessPort:
+
+prometheusPort:
+annotations: {}
+
+#Ingress
+ingress:
+  annotations: {}
+  public:
+  - hosts: []
+    path: "/"
+    secretName: ""
+
+nfsMount:
+- mountPath: ""
+  volumeName: ""
+
+hardened: false
+serviceAccount: default
+leaderElection: false
+envVars: []
+
+owner: ""
+baseImage: ""
+clusterDNS: prod.svc.cluster.local

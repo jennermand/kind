@@ -1,0 +1,45 @@
+onprem: false
+name: qpow
+image: ghcr.io/sparnord/qpow:2.175.DB
+clusterDNS: prod.svc.cluster.local
+replicaCount: 1
+deploymentStrategy: Recreate
+memory: 256Mi
+hardened: true
+nodetype: open
+minReadySeconds: 5
+
+progressDeadlineSeconds: 300
+secrets:
+- secretName: qpow-secrets
+  type: Opaque
+  values:
+  - key: KAPOWDB_USER
+    objectName: QPOW-KAPOWDB-USER
+    objectType: secret
+  - key: KAPOWDB_PASS
+    objectName: QPOW-KAPOWDB-PASS
+    objectType: secret
+  - key: DB2_USER
+    objectName: QPOW-DB2-USER
+    objectType: secret
+  - key: DB2_PASS
+    objectName: QPOW-DB2-PASS
+    objectType: secret
+envVars:
+- name: JVM_ARGS
+  value: -Xmx192m
+- name: DB2_SCHEMA
+  value: QPOW
+- name: KAPOWDB_DATABASE
+  value: D00369PD00_KAPOW_DATA_UDVIKLING
+- name: DB2_ENV
+  value: MWD
+- name: DB2_PORT
+  value: 60175
+- name: DB2_SERVER
+  value: db_mwd_udv.9380a.net
+- name: DB2_GROUP
+  value: db2_mwd
+
+serviceAccount: default

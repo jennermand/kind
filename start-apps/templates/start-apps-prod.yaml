@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: sparnord-application-set-prod
+  namespace: argo-cd
+spec:
+
+  generators:
+  - git:
+      repoURL: https://github.com/sparnord/jensk-dev.git
+      revision: developer
+      directories:
+      - path: kind/apps-dev/*
+  template:
+    metadata:
+      name: '{{`{{ path.basename}}`}}-prod'
+    spec:
+      project: production
+      sources:
+      # - repoURL: 'https://github.com/sparnord/helm-charts'
+      - repoURL: 'https://github.com/sparnord/jensk-dev'      
+        path: helm-charts-dev/sparnord-was-template
+        targetRevision: developer
+        helm:
+          valueFiles:
+          - $aks/values/{{`{{ path.basename}}`}}/values.yaml
+          - $values/kind/apps-dev/local-dev-values.yaml
+          - $values/kind/apps-dev/{{`{{ path.basename}}`}}/values.yaml
+
+      - repoURL: 'https://github.com/sparnord/aks-test'
+        targetRevision: HEAD
+        ref: aks
+      - repoURL: 'https://github.com/sparnord/jensk-dev'
+        targetRevision: developer
+        ref: values
+
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{`{{ path.basename}}`}}-prod'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true

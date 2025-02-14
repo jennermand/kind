@@ -10,7 +10,8 @@ if (!(kubectl get namespace argo-events)) {
     # Install with a validating admission controller
     Write-Host "👌 Installere Argo Events i argo-events namespace..."
 }
-$token = $env:TOKEN
+
+$token = $env:GITHUB_TOKEN
 $enableEvents = $true
 Write-Host "👌 Applying local settings i argo-events...."
 helm upgrade -i argo-events ./0-boot/charts/02-argo-events/ -n argo-events `
@@ -19,7 +20,7 @@ helm upgrade -i argo-events ./0-boot/charts/02-argo-events/ -n argo-events `
     --set "argocd.event=$enableEvents" `
     --set "argocd.workflows=$enableWorkflows" `
     --set "argocd.version=$ARGO_WORKFLOWS_VERSION" `
-    --set "argocd.repo=$gitrepo" `
+    --set "argocd.repo=$gitrepo" --debug `
     
     
     

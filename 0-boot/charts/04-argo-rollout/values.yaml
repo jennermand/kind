@@ -1,0 +1,4 @@
+dashboard:
+  enabled: true
+  # service:
+  #   type: LoadBalancer

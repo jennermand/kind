@@ -1,0 +1,14 @@
+onprem: false
+name: jensk-dev
+clusterDNS: corpdev.9380a.net
+replicaCount: 1
+deploymentStrategy: Recreate
+memory: 256Mi
+hardened: true
+nodetype: open
+minReadySeconds: 5
+progressDeadlineSeconds: 300
+servicePort: 5001
+secrets: []
+envVars: []
+env: jensk-dev

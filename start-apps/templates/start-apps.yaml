@@ -6,17 +6,17 @@ metadata:
 spec: 
   generators:
   - git:
-      repoURL: {{ .Values.env.REPOURL }}
+      repoURL: https://github.com/sparnord/jensk-dev
       revision: HEAD
       directories:
-      - path: apps/*
+      - path: kind/apps/*
   template:
     metadata:
       name: '{{`{{path.basename}}`}}'
     spec: 
       project: default      
-      source: 
-        repoURL: {{ .Values.env.REPOURL }}
+      source:
+        repoURL: https://github.com/sparnord/jensk-dev
         targetRevision: HEAD
         path: '{{`{{path}}`}}'
       destination:
@@ -25,6 +25,6 @@ spec:
       syncPolicy:
         automated:
           prune: true
-          selfHeal: true
+          selfHeal: false
         syncOptions:
           - CreateNamespace=true 

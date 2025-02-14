@@ -1,6 +1,9 @@
+init:
+  token: token-goes-here
+
 events:
   argocd:
-    token: "{{ .Values.argocd.argocd.token }}"
+    token: "{{ .Values.argocd.token }}"
     event: &events choice-here
 
   password:
@@ -11,10 +14,14 @@ events:
 
 argocd:
   argocd:
-    repo: your-repo-here
-    token: your-token-here
+    repo: "https://github.com/sparnord/jensk-dev"
     event: events
 
+  token: your-token-here-global
+  repositories:
+  - repo: val
+    name: val
+    token: val
   argo-cd:
     dex:
       enabled: false
@@ -33,4 +40,8 @@ argocd:
       secret:
         argocdServerAdminPassword: ding
 
+  password:
+    secretName: github-token
+    secretKey: token
 
+  namespace: argo-events

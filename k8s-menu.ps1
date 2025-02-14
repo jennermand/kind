@@ -1,33 +1,6 @@
-
-function Show-Variables {
-    param()
-    
-    Write-Host "`n=== Current Variables ===" -ForegroundColor Cyan
-    
-    $variables = @(
-        @{Name = "Namespace"; Value = $namespace; Type = $namespace.GetType().Name }
-        @{Name = "Token"; Value = "***${token.Substring(0,4)}..."; Type = $token.GetType().Name }
-        @{Name = "Git Repo"; Value = $gitrepo; Type = $gitrepo.GetType().Name }
-        @{Name = "Argo Version"; Value = $ARGO_WORKFLOWS_VERSION; Type = $ARGO_WORKFLOWS_VERSION.GetType().Name }
-        @{Name = "Workflows Enabled"; Value = $enableWorkflows; Type = $enableWorkflows.GetType().Name }
-        @{Name = "Events Enabled"; Value = $enableEvents; Type = $enableEvents.GetType().Name }
-    )
-
-    $nameWidth = ($variables | ForEach-Object { $_.Name.Length } | Measure-Object -Maximum).Maximum
-    $typeWidth = ($variables | ForEach-Object { $_.Type.Length } | Measure-Object -Maximum).Maximum
-
-    foreach ($var in $variables) {
-        $name = $var.Name.PadRight($nameWidth)
-        $type = $var.Type.PadRight($typeWidth)
-        Write-Host ("{0} [{1}]: " -f $name, $type) -NoNewline -ForegroundColor Yellow
-        Write-Host $var.Value -ForegroundColor Green
-    }
-    Write-Host "=====================`n" -ForegroundColor Cyan
-}
+. .\utils.ps1
 
 # Add to menu options
-
-
 function FunctionA {
     param (
         [string]$param1
@@ -44,14 +17,28 @@ function FunctionB {
     # Add your code for function B here
 }
 
-function FunctionC {
-    Write-Host "Performing function C..."
-    # Add your code for function C here
+function StopAllJobsAndExit {
+    Write-Host "Stopping all jobs"
+    # Get all running jobs
+    $jobs = Get-Job
+
+    # Check if there are any jobs to stop
+    if ($jobs) {
+        foreach ($job in $jobs) {
+            # Stop the job
+            Stop-Job -Id $job.Id
+            # Remove the job
+            Remove-Job -Id $job.Id
+        }
+        Write-Output "All jobs have been stopped and removed."
+    }
+    else {
+        Write-Output "No jobs found."
+    }
 }
 
 # Define the menu options as a hashtable
-$menuOptions = @{
-   
+$menuOptions = @{   
     'b' = @{
         Description = "Install or upgrade Argo-Events"
         Action      = { 
@@ -64,9 +51,27 @@ $menuOptions = @{
             . .\install-argo-workflow.ps1            
         }
     }
+    'd' = @{
+        Description = "Install or upgrade Argo-Rollouts"
+        Action      = { 
+            . .\install-argo-rollouts.ps1            
+        }
+    }
+    'e' = @{
+        Description = "Port forward again"
+        Action      = { 
+            . .\portForward.ps1         
+        }
+    }
+    'f' = @{
+        Description = "Install extra funcs (prometheus, secret-replicator, csi-secret-store)"
+        Action      = { 
+            . .\install-prometheus.ps1
+        }
+    }
     'x' = @{
         Description = "Exit"
-        Action      = { FunctionC }
+        Action      = { StopAllJobsAndExit }
     }
     # 'r' = @{
     #     Description = "reload script"
@@ -74,51 +79,7 @@ $menuOptions = @{
     # }
 }
 function Update-ArgoCD {
-    param(
-        [string]$Namespace = "argo-cd",
-        [hashtable]$Values
-    )
-
-    try {
-        # Validate helm exists
-        if (-not (Get-Command helm -ErrorAction SilentlyContinue)) {
-            throw "Helm is not installed or not in PATH"
-        }
-
-        # Validate path exists
-        if (-not (Test-Path "./0-boot")) {
-            throw "Chart path './0-boot' not found"
-        }
-
-        # Create hashtable of helm values
-        $helmValues = @{
-            "events.argocd.token"     = $token
-            "argocd.argocd.token"     = $token
-            "argocd.argocd.repo"      = ""
-            "events.argocd.event"     = $enableEvents
-            "argocd.argocd.workflows" = $enableWorkflows
-            "argocd.argocd.version"   = $ARGO_WORKFLOWS_VERSION
-        }
-
-        # Convert hashtable to --set parameters
-        $setParams = $helmValues.GetEnumerator() | ForEach-Object {
-            "--set=$($_.Key)=$($_.Value)"
-        }
-
-        # Execute helm upgrade
-        $result = helm upgrade argo-cd ./0-boot -n $Namespace $setParams
-
-        if ($LASTEXITCODE -ne 0) {
-            throw "Helm upgrade failed with exit code $LASTEXITCODE"
-        }
-
-        Write-Host "✅ Argo CD upgraded successfully" -ForegroundColor Green
-        return $true
-    }
-    catch {
-        Write-Host "❌ Error upgrading Argo CD: $_" -ForegroundColor Red
-        return $false
-    }
+    . ./install-argo-cd.ps1 
 }
 $menuOptions['v'] = @{
     Description = "View all variables"
@@ -130,8 +91,6 @@ $menuOptions['a'] = @{
     Description = "Update Argo CD installation"
     Action      = { Update-ArgoCD -Namespace $namespace }
 }
-
-
 
 function Show-Menu {
     Clear-Host
@@ -145,7 +104,7 @@ function Show-Menu {
 }
 
 do {
-    # show meny ordered by key
+    # show meny ordered by key    
     Show-Menu
 
     Write-Host "`n" -NoNewline -BackgroundColor DarkGreen -ForegroundColor White

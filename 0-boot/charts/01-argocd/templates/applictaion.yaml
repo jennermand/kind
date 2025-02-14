@@ -13,8 +13,8 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: ./start-apps
-    repoURL: "{{ .Values.argocd.repo }}"
+    path: ./kind/start-apps
+    repoURL: {{ .Values.argocd.repo }}
     targetRevision: HEAD
   syncPolicy:
     automated: {}

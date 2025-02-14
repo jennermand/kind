@@ -1,21 +1,19 @@
-{{- if .Values.argocd.repo  }}
+{{- range .Values.repositories }}
 apiVersion: v1
-data:
-  password: {{ .Values.argocd.token | b64enc }}
-  project: ZGVmYXVsdA==
-  type: Z2l0
-  url: {{ .Values.argocd.repo | b64enc }}
-  username: amVubmVybWFuZA==
 kind: Secret
 metadata:
   annotations:
     managed-by: argocd.argoproj.io
-  creationTimestamp: "2024-11-24T10:02:12Z"
   labels:
     argocd.argoproj.io/secret-type: repository
-  name: repo-secrets-ding
+  name: repo-secrets-{{ .name }}
   namespace: argo-cd
-  resourceVersion: "1318"
-  uid: b66454c6-5399-4122-aa50-1e2c676f3d06
 type: Opaque
+data:
+  password: {{ .token | b64enc }}
+  project: ZGVmYXVsdA==
+  type: Z2l0
+  url: {{ .repo | b64enc }}
+  username: amVubmVybWFuZA==
+---
 {{- end }}
